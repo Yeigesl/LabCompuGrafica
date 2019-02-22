@@ -33,7 +33,7 @@ const GLchar* fragmentShaderSource = { "#version 400\n"
 "  out_Color = vec4(ourColor, 1.0);\n"
 "}\n" };
 
-GLuint VBO, VAO;
+GLuint VBO, VAO, VBO2,VAO2;
 GLint vertexShader, fragmentShader, shaderProgram;
 
 typedef struct {
@@ -47,6 +47,7 @@ int screenHeight;
 GLFWwindow * window;
 
 bool exitApp = false;
+bool render1 = true;
 int lastMousePosX;
 int lastMousePosY;
 
@@ -152,11 +153,202 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 
 	Vertex vertices[] =
 	{
-		{ {-0.5f, -0.5f, 0.0f } ,{ 1.0f, 0.0f, 0.0f } },
-		{ { 0.5f, -0.5f, 0.0f } ,{ 0.0f, 1.0f, 0.0f } },
-		{ { 0.0f,  0.5f, 0.0f } ,{ 0.0f, 0.0f, 1.0f } }
+		//PISO
+		{ {-2.0f, -0.5f, 0.0f } ,{ 0.0f, 0.6f, 0.0f } },
+		{ {-2.0f, -1.0f, 0.0f } ,{ 0.0f, 0.6f, 0.0f } },
+		{ {2.0f, -1.0f, 0.0f } ,{ 0.0f, 0.6f, 0.4f } },
+		{ {2.0f,-1.0f, 0.0f } ,{ 0.0f, 0.6f, 0.4f } },
+		{ {2.0f,-0.5f, 0.0f } ,{ 0.0f, 0.6f, 0.0f } },
+		{ {-2.0f,-0.5f, 0.0f } ,{ 0.0f, 0.6f, 0.0f } },
+
+		//Cuadro casa 
+
+		{ {-.5f, .6f, 0.0f } ,{ 1.0f, 0.6f, 0.4f } },
+		{ {-.5f, -0.5f, 0.0f } ,{ 1.0f, 0.6f, 0.4f } },
+		{ {.5f,-0.5f, 0.0f } ,{ 1.0f, 0.6f, 0.4f } },
+		{ {.5f,-0.5f, 0.0f } ,{ 1.0f, 0.6f, 0.4f } },
+		{ {.5f,.6f, 0.0f } ,{ 1.0f, 0.6f, 0.4f } },
+		{ {-.5f,.6f, 0.0f } ,{ 1.0f, 0.6f, 0.4f } },
+
+		//rectangulo superior casa
+		
+		{ {-.5f, .7f, 0.0f } ,{ 1.0f, .0f, 0.4f } },
+		{ {-.5f, .6f, 0.0f } ,{ 1.0f, 0.0f, 0.4f } },
+		{ {.5f,.6f, 0.0f } ,{ 1.0f, 0.0f, 0.4f } },
+		{ {.5f,.6f, 0.0f } ,{ 1.0f, 0.0f, 0.4f } },
+		{ {.5f,.7f, 0.0f } ,{ 1.0f, 0.0f, 0.4f } },
+		{ {-.5f,.7f, 0.0f } ,{ 1.0f, 0.0f, 0.4f } },
+
+		//Triangulo superior casa
+		{ {-.5f, .7f, 0.0f } ,{ 1.0f, .0f, 0.2f } },
+		{ {.5f, .7f, 0.0f } ,{ 1.0f, .0f, 0.2f } },
+		{ {0.0f, 1.0f, 0.0f } ,{ 1.0f, .0f, 0.2f } },
+
+		//Puerta 
+		{ {-.2f, .2f, 0.0f } ,{ 1.0f, 1.0f, 1.0f } },
+		{ {-.2f, -.5f, 0.0f } ,{ 1.0f, 1.0f, 1.0f } },
+		{ {.2f,-.5f, 0.0f } ,{ 1.0f, 1.0f, 1.0f } },
+		{ {.2f,-.5f, 0.0f } ,{ 1.0f, 1.0f, 1.0f } },
+		{ {.2f,.2f, 0.0f } ,{ 1.0f, 1.0f, 1.0f } },
+		{ {-.2f,.2f, 0.0f } ,{ 1.0f, 1.0f, 1.0f } },
+
+		//Marco de la puerta lateral izquierdo 
+		{ {-.23f, .2f, 0.0f } ,{ 0.0f, 0.0f, 0.0f } },
+		{ {-.23f, -.5f, 0.0f } ,{ 0.0f, 1.0f, 0.0f } },
+		{ {-.2f,-.5f, 0.0f } ,{ 5.0f, 1.0f, 0.0f } },
+		{ {-.2f,-.5f, 0.0f } ,{ 0.0f, 1.0f, 0.0f } },
+		{ {-.2f,.2f, 0.0f } ,{ 0.0f, 1.0f, 0.0f } },
+		{ {-.23f,.2f, 0.0f } ,{ 0.0f, 0.0f, 0.0f } },
+
+
+		//Marco de la puerta lateral derecho
+		{ {.2f, .2f, 0.0f } ,{ 0.0f, 0.0f, 0.0f } },
+		{ {.2f, -.5f, 0.0f } ,{ 0.0f, 1.0f, 0.0f } },
+		{ {.23f,-.5f, 0.0f } ,{ 3.0f, 1.0f, 0.0f } },
+		{ {.23f,-.5f, 0.0f } ,{ 0.0f, 1.0f, 0.0f } },
+		{ {.23f,.2f, 0.0f } ,{ 0.0f, 1.0f, 0.0f } },
+		{ {.2f,.2f, 0.0f } ,{ 0.0f, 0.0f, 0.0f } },
+
+
+		//Marco de la puerta inferior
+		{ {-.23f, -.5f, 0.0f } ,{ 0.0f, 0.0f, 0.0f } },
+		{ {-.23f, -.53f, 0.0f } ,{ 0.0f, 1.0f, 0.0f } },
+		{ {.23f,-.53f, 0.0f } ,{ 0.0f, 1.0f, 0.0f } },
+		{ {.23f,-.53f, 0.0f } ,{ 0.0f, 1.0f, 0.0f } },
+		{ {.23f,-.5f, 0.0f } ,{ 0.0f, 1.0f, 0.0f } },
+		{ {-.23f,-.5f, 0.0f } ,{ 0.0f, 0.0f, 0.0f } },
+
+
+		//Marco de la puerta superior
+		{ {-.23f,.23f, 0.0f } ,{ 0.0f, 0.0f, 0.0f } },
+		{ {-.23f,.2f, 0.0f } ,{ 0.0f, 1.0f, 0.0f } },
+		{ {.23f,.2f, 0.0f } ,{ 0.0f, 1.0f, 0.0f } },
+		{ {.23f,.2f, 0.0f } ,{ 0.0f, 1.0f, 0.0f } },
+		{ {.23f,.23f, 0.0f } ,{ 0.0f, 1.0f, 0.0f } },
+		{ {-.23f,.23f, 0.0f } ,{ 0.0f, 0.0f, 0.0f } },
+
+		//Chapa de la puerta 
+		{ {.15f,0.0f, 0.0f } ,{ 0.0f, 0.0f, 0.0f } },
+		{ {.15f,-0.01f, 0.0f } ,{ 0.0f, 0.0f, 0.0f } },
+		{ {.17f,-0.01f, 0.0f } ,{ 0.0f, 0.0f, 0.0f } },
+		{ {.17f,-0.01f, 0.0f } ,{ 0.0f, 0.0f, 0.0f } },
+		{ {.17,0.0f, 0.0f } ,{ 0.0f, 0.0f, 0.0f } },
+		{ {.15f,0.0f, 0.0f } ,{ 0.0f, 0.0f, 0.0f } },
+
+		//Ventana  del triangulo superior
+		{ {-.08f,.9f, 0.0f } ,{ 0.0f, 0.0f, 0.0f } },
+		{ {-.08f,.8f, 0.0f } ,{ 2.0f, 2.0f, 0.0f } },
+		{ {.1f,.8f, 0.0f } ,{ 2.0f, 2.0f, 0.0f } },
+		{ {.1f,.8f, 0.0f } ,{ 2.0f, 2.0f, 0.0f } },
+		{ {.1f,.9f, 0.0f } ,{ 2.0f, 2.0f, 0.0f } },
+		{ {-.08,.9f, 0.0f } ,{ 0.0f, 0.0f, 0.0f } },
+		// marco Ventana  del triangulo izquierdo 
+		{ {-.084f,.9f, 0.0f } ,{ 0.0f, 0.0f, 0.0f } },
+		{ {-.084f,.8f, 0.0f } ,{ 0.0f, 0.0f, 0.0f } },
+		{ {-.08f,.8f, 0.0f } ,{ 0.0f, 0.0f, 0.0f } },
+		{ {-.08f,.8f, 0.0f } ,{ 0.0f, 0.0f, 0.0f } },
+		{ {-.08f,.9f, 0.0f } ,{ 0.0f, 0.0f, 0.0f } },
+		{ {-.084f,.9f, 0.0f } ,{ 0.0f, 0.0f, 0.0f } },
+		// marco Ventana  del triangulo derecho
+		{ {.08f, .9f, 0.0f }, { 0.0f, 0.0f, 0.0f } },
+		{ {.08f,.8f, 0.0f } ,{ 0.0f, 0.0f, 0.0f } },
+		{ {.102f,.8f, 0.0f } ,{ 0.0f, 0.0f, 0.0f } },
+		{ {.102f,.8f, 0.0f } ,{ 0.0f, 0.0f, 0.0f } },
+		{ {.102f,.9f, 0.0f } ,{ 0.0f, 0.0f, 0.0f } },
+		{ {.08,.9f, 0.0f } ,{ 0.0f, 0.0f, 0.0f } },
+
+
+		// marco Ventana  del triangulo inferior
+
+		{ {-.08f, .8f, 0.0f }, { 0.0f, 0.0f, 0.0f } },
+		{ {-.08f,.77f, 0.0f } ,{ 0.0f, 0.0f, 0.0f } },
+		{ {.1f,.77f, 0.0f } ,{ 0.0f, 0.0f, 0.0f } },
+		{ {.1f,.77f, 0.0f } ,{ 0.0f, 0.0f, 0.0f } },
+		{ {.1f,.8f, 0.0f } ,{ 0.0f, 0.0f, 0.0f } },
+		{ {-.08,.8f, 0.0f } ,{ 0.0f, 0.0f, 0.0f } },
+
+	// marco Ventana  del triangulo superior
+
+		{ {-.08f, .93f, 0.0f }, { 0.0f, 0.0f, 0.0f } },
+		{ {-.08f,.9f, 0.0f } ,{ 0.0f, 0.0f, 0.0f } },
+		{ {.1f,.9f, 0.0f } ,{ 0.0f, 0.0f, 0.0f } },
+		{ {.1f,.9f, 0.0f } ,{ 0.0f, 0.0f, 0.0f } },
+		{ {.1f,.93f, 0.0f } ,{ 0.0f, 0.0f, 0.0f } },
+		{ {-.08,.93f, 0.0f } ,{ 0.0f, 0.0f, 0.0f } },
+
+	// TRIANGULO PARA LA CHIMENEA 
+		{ {.4f, .7f, 0.0f }, { 2.0f, .0f, 0.2f } },
+		{ {.4f, .88f, 0.0f } ,{ 0.0f, .2f, 0.2f } },
+		{ {0.2f, .88f, 0.0f } ,{ 0.0f, .0f, 0.2f } },
+
+	//cHIMENEA
+		{ {.2f, 1.0f, 0.0f }, { 2.0f, 0.0f, 0.0f } },
+		{ {.2f,.88f, 0.0f } ,{ 2.0f, 0.0f, 0.0f } },
+		{ {.4f,.88f, 0.0f } ,{ 2.0f, 0.0f, 0.0f } },
+		{ {.4f,.88f, 0.0f } ,{ 2.0f, 0.0f, 0.0f } },
+		{ {.4f,1.0f, 0.0f } ,{ 2.0f, 0.0f, 0.0f } },
+		{ {.2,1.0f, 0.0f } ,{ 2.0f, 0.0f, 0.0f } },
+
+	// cerca 
+		{ {-5.4f, .1f, 0.0f }, { 0.0f, 0.0f, 0.0f } },
+		{ {-5.4f,-.5f, 0.0f } ,{ 0.0f, 0.0f, 0.0f } },
+		{ {-5.1f,-.5f, 0.0f } ,{ 0.0f, 0.0f, 0.0f } },
+		{ {-5.1,-.5f, 0.0f } ,{ 0.0f, 0.0f, 0.0f } },
+		{ {-5.1,.1f, 0.0f } ,{ 0.0f, 0.0f, 0.0f } },
+		{ {-5.4f,.1f, 0.0f } ,{ 0.0f, 0.0f, 0.0f } }
+
 	};
 
+	
+
+
+
+	Vertex vertices2[] =
+	{
+		//Triangulo uno
+		{ {0.f, 0.0f, 0.0f } ,{ 1.0f, 1.0f, 0.0f } },
+		{ {.2f, .8f, 0.0f } ,{ 1.0f, 1.0f, 0.0f } },
+		{ {-.2f, .8f, 0.0f } ,{ 1.0f, 1.0f, 0.0f } },
+
+		//Triangulo dos 
+		{ {0.f, 0.0f, 0.0f } ,{ 1.0f, 1.0f, 0.0f } },
+		{ {.2f, -.8f, 0.0f } ,{ 1.0f, 1.0f, 0.0f } },
+		{ {-.2f, -.8f, 0.0f } ,{ 1.0f, 1.0f, 0.0f } },
+
+		//Triangulo tres 
+		{ {0.f, 0.0f, 0.0f } ,{ 1.0f, 1.0f, 0.0f } },
+		{ {.8f, .2f, 0.0f } ,{ 1.0f, 1.0f, 0.0f } },
+		{ {.8f, -.2f, 0.0f } ,{ 1.0f, 1.0f, 0.0f } },
+
+		//Triangulo cuatro 
+		{ {0.f, 0.f, 0.0f } ,{ 1.0f, .1f, 0.0f } },
+		{ {-.8f, .2f, 0.0f } ,{ 1.0f, 1.0f, 0.0f } },
+		{ {-.8f, -.2f, 0.0f } ,{ 1.0f, 1.0f, 0.0f } },
+
+		//Triangulo añadido uno 
+		{ {0.8f, 0.2f, 0.0f } ,{ 1.0f, 1.0f, 0.2f } },
+		{ {.8f, -.2f, 0.0f } ,{ 1.0f, 1.0f, 0.2f } },
+		{ {1.0f, 0.f, 0.0f } ,{ 1.0f, 1.0f, 0.2f } },
+
+		//Triangulo añadido dos
+		{ {-.2f, 0.8f, 0.0f } ,{ 1.0f, 1.0f, 0.2f } },
+		{ {.2f, .8f, 0.0f } ,{ 1.0f, 1.0f, 0.2f } },
+		{ {0.0f, 1.f, 0.0f } ,{ 1.0f, 1.0f, 0.2f } },
+
+		//Triangulo añadido tres
+		{ {-0.8f, 0.2f, 0.0f } ,{ 1.0f, 1.0f, 0.2f } },
+		{ {-.8f, -.2f, 0.0f } ,{ 1.0f, 1.0f, 0.2f } },
+		{ {-1.0f, 0.f, 0.0f } ,{ 1.0f, 1.0f, 0.2f } },
+
+
+		//Triangulo añadido cuatro 
+		{ {-.2f, -0.8f, 0.0f } ,{ 1.0f, .0f, 0.2f } },
+		{ {.2f, -.8f, 0.0f } ,{ 1.0f, .0f, 0.2f } },
+		{ {0.0f, -1.f, 0.0f } ,{ 1.0f, .0f, 0.2f } }
+
+		
+	};
+	//PRIMER TRIANGULO
 	const size_t bufferSize = sizeof(vertices);
 	const size_t vertexSize = sizeof(vertices[0]);
 	const size_t rgbOffset = sizeof(vertices[0].XYZ);
@@ -175,6 +367,33 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, vertexSize, 0);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, vertexSize,
+		(GLvoid*)rgbOffset);
+
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
+	//SEGUNDO TRIANGULO
+	const size_t bufferSize2 = sizeof(vertices2);
+	const size_t vertexSize2 = sizeof(vertices2[0]);
+	const size_t rgbOffset2 = sizeof(vertices2[0].XYZ);
+
+	std::cout << "Buffer Size:" << bufferSize2 << std::endl;
+	std::cout << "Vertex Size:" << vertexSize2 << std::endl;
+	std::cout << "Buffer size:" << rgbOffset2 << std::endl;
+
+	glGenBuffers(1, &VBO2);
+
+	glGenVertexArrays(1, &VAO2);
+	glBindVertexArray(VAO2);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO2);
+	glBufferData(GL_ARRAY_BUFFER, bufferSize2, vertices2, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, vertexSize2, 0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, vertexSize2,
 		(GLvoid*)rgbOffset);
 
 	glEnableVertexAttribArray(0);
@@ -223,6 +442,13 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode
 		case GLFW_KEY_ESCAPE:
 			exitApp = true;
 			break;
+		case GLFW_KEY_C:
+			render1 = true;
+			break;
+		case GLFW_KEY_E:
+			render1 = false;
+			break;
+
 		}
 	}
 }
@@ -267,8 +493,17 @@ void applicationLoop() {
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		
 		glUseProgram(shaderProgram);
-		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		if (render1) {
+			glBindVertexArray(VAO);
+			glDrawArrays(GL_TRIANGLES, 0, 300);
+		}
+		else
+			{
+			glBindVertexArray(VAO2);
+			glDrawArrays(GL_TRIANGLES, 0, 135);
+
+		}
+	
 		glBindVertexArray(0);
 
 		glfwSwapBuffers(window);

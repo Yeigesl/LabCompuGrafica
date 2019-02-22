@@ -19,7 +19,7 @@ GLFWwindow * window;
 bool exitApp = false;
 int lastMousePosX;
 int lastMousePosY;
-
+bool isBlue = true;
 double deltaTime;
 
 // Se definen todos las funciones.
@@ -99,6 +99,12 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode
 		case GLFW_KEY_ESCAPE:
 			exitApp = true;
 			break;
+		case GLFW_KEY_B:
+			isBlue = true;
+			break;
+		case GLFW_KEY_R:
+			isBlue = false;
+			break;
 		}
 	}
 }
@@ -137,8 +143,12 @@ bool processInput(bool continueApplication){
 void applicationLoop() {
 	bool psi = true;
 	while (psi) {
-		psi = processInput(true);
 		glClear(GL_COLOR_BUFFER_BIT);
+		psi = processInput(true);
+		if(isBlue)
+			glClearColor(0.0,0.0,1.0,1.0);
+		else
+			glClearColor(1.0, 0.0, 0.0, 1.0);
 		glfwSwapBuffers(window);
 	}
 }
